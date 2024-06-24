@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class FolderServiceImpl implements FolderService {
+public class FolderServiceImpl implements FolderService{
 
     @Autowired(required = false)
     private FolderMapper folderMapper;
