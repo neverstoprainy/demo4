@@ -79,7 +79,6 @@ public class UserController {
         String captcha = params.get("captcha");
         String captchaId = params.get("captchaId");
 
-        // Verify captcha
         String cachedCaptcha = (String) redisUtil.get(captchaId);
         if (cachedCaptcha == null || !cachedCaptcha.equalsIgnoreCase(captcha)) {
             return response(1, null, "验证码错误");
@@ -88,8 +87,8 @@ public class UserController {
         if (storedEmailCode == null || !storedEmailCode.equals(emailCode)) {
             return response(1, null, "邮箱验证码错误");
         }
-        // Verify email code (mock, assuming email code is valid)
-        // In real case, you should verify the email code sent to the email
+        log.info(cachedCaptcha);
+        log.info(storedEmailCode);
 
         User user = new User();
         user.setUsername(username);
@@ -109,7 +108,6 @@ public class UserController {
         String captcha = params.get("captcha");
         String captchaId = params.get("captchaId");
 
-        // Verify captcha
         String cachedCaptcha = (String) redisUtil.get(captchaId);
         log.info("这是验证码ID:"+cachedCaptcha);
         if (cachedCaptcha == null || !cachedCaptcha.equalsIgnoreCase(captcha)) {
@@ -131,7 +129,7 @@ public class UserController {
         return response(0, token, "登录成功");
     }
 
-    @PostMapping("/password")
+    @PostMapping("/changePassword")
     public Map<String, Object> updatePassword(@RequestHeader("Authorization") String token, @RequestBody Map<String, String> params) {
         String oldPassword = params.get("oldPassword");
         String newPassword = params.get("newPassword");

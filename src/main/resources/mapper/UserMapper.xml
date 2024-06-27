@@ -8,11 +8,15 @@
         <result column="username" jdbcType="VARCHAR" property="username" />
         <result column="email" jdbcType="VARCHAR" property="email" />
         <result column="password" jdbcType="VARCHAR" property="password" />
-        <result column="userRole" jdbcType="VARCHAR" property="userRole" />
-        <result column="userRootFolder" jdbcType="VARCHAR" property="userRootFolder" />
+
     </resultMap>
 
     <sql id="Base_Column_List">
         id, username, email, password, userRole, userRootFolder
     </sql>
+
+    <insert id="insertUser" parameterType="com.entity.User">
+        INSERT INTO users (username, password, email, create_time, update_time, used_capacity, capacity, is_admin, avatar, folder_id, login_time)
+        VALUES (#{username}, #{password}, #{email}, #{createTime}, #{updateTime}, #{usedCapacity}, #{capacity}, #{isAdmin}, #{avatar}, #{folderId}, #{loginTime})
+    </insert>
 </mapper>
