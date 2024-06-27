@@ -9,8 +9,10 @@ import lombok.Data;
  * @date 2024/6/24 19:33
  */
 @Data
-public class Recycle {
-    private String fileId;
-    private String parentFolderId;
+public class Recycle{
+    private Long FileId;
+    private Long parentFolderId;
     private String userId;
+    private boolean isFolder;
+
 }

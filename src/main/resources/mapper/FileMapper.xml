@@ -9,4 +9,10 @@
         VALUES (#{parentFolderId}, #{fileType}, #{fileName}, #{fileSize}, #{createdBy})
     </insert>
 
+    <!--回收 -->
+    <update id="recycleFile">
+        UPDATE files
+        SET is_recycled = 1, recycled_by = #{userId}, recycled_at = NOW()
+        WHERE file_id = #{fileId} AND parent_folder_id = #{parentFolderId}
+    </update>
 </mapper>

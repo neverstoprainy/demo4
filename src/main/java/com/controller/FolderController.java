@@ -1,14 +1,14 @@
 package com.controller;
 
-import com.entity.Folder;
-import com.entity.ResponseMessage;
+import com.entity.*;
 import com.service.FolderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author zym
@@ -29,6 +29,71 @@ public class FolderController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             ResponseMessage response = new ResponseMessage(1, "创建失败", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @DeleteMapping("/recycleFolder")
+    public ResponseEntity<ResponseMessage> recycleFolder(@RequestBody Recycle recycleRequest,
+                                                         @RequestHeader("Authorization") String token) {
+        try {
+            folderService.recycleFolder(recycleRequest.getFileId(), recycleRequest.getParentFolderId(), recycleRequest.getUserId(), token);
+            ResponseMessage response = new ResponseMessage(0, "回收成功", "ok");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ResponseMessage response = new ResponseMessage(1, "回收失败", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @GetMapping("/contents")
+    public ResponseEntity<ResponseMessage> getFolderContents(@RequestParam(value = "folderId", required = false) Long folderId,
+                                                             @RequestHeader("Authorization") String token) {
+        try {
+            List<Map<String, Object>> contents = folderService.getFolderContents(folderId, token);
+            ResponseMessage response = new ResponseMessage(0, contents, "ok");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ResponseMessage response = new ResponseMessage(1, null, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponseMessage> deleteFolder(@RequestBody DeleteRequest deleteRequest,
+                                                        @RequestHeader("Authorization") String token) {
+        try {
+            folderService.deleteFolder(deleteRequest.getFolderId(), token);
+            ResponseMessage response = new ResponseMessage(0, "操作成功", "ok");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ResponseMessage response = new ResponseMessage(1, null, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PutMapping("/rename")
+    public ResponseEntity<ResponseMessage> renameFolder(@RequestBody RenameRequest renameRequest,
+                                                        @RequestHeader("Authorization") String token) {
+        try {
+            folderService.renameFolder(renameRequest.getFolderId(), renameRequest.getNewFolderName(), token);
+            ResponseMessage response = new ResponseMessage(0, "操作成功", "ok");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ResponseMessage response = new ResponseMessage(1, null, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PutMapping("/move")
+    public ResponseEntity<ResponseMessage> moveFolder(@RequestBody MoveRequest moveRequest,
+                                                      @RequestHeader("Authorization") String token) {
+        try {
+            folderService.moveFolder(moveRequest.getFolderId(), moveRequest.getOldFolderId(), moveRequest.getNewFolderId(), token);
+            ResponseMessage response = new ResponseMessage(0, "移动成功", "ok");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ResponseMessage response = new ResponseMessage(1, null, e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
