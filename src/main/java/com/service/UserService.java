@@ -12,7 +12,8 @@ public interface UserService {
     User findByUsername(String username);
     User findByEmail(String email);
     void register(User user);
-    void updatePassword(Long id, String password);
-    void deleteUser(Long id);
-    User findById(Long id);
+    void updatePassword(String id, String password);
+    void deleteUser(String id);
+    User findById(String id);
+    void update(String id,String username,String email);
 }

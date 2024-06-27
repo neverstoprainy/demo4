@@ -17,17 +17,17 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping("/files")
+@RequestMapping("/file")
 public class FileController {
 
     @Autowired(required = false)
     private FileService fileService;
 
-    @PostMapping("/upload")
-    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam Long parentFolderId,
-                                                      @RequestParam String fileType,
+    @PostMapping("/uploadFile")
+    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("parentFolderId") Long parentFolderId,
+                                                      @RequestParam("fileType") String fileType,
                                                       @RequestParam("file") MultipartFile file,
-                                                      @RequestHeader("Authorization") String token) {
+                                                      @RequestHeader("Authorization") String token){
         try {
             fileService.uploadFile(parentFolderId, fileType, file, token);
             ResponseMessage response = new ResponseMessage(0, "文件上传成功", "ok");

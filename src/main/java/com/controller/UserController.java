@@ -54,7 +54,6 @@ public class UserController {
     private EmailUtil emailUtil;
 
 
-
     @PostMapping("/sendEmailCode")
     public Map<String, Object> sendEmailCode(@RequestParam String email) {
         String emailCode = generateEmailCode();
@@ -109,7 +108,7 @@ public class UserController {
         String captchaId = params.get("captchaId");
 
         String cachedCaptcha = (String) redisUtil.get(captchaId);
-        log.info("这是验证码ID:"+cachedCaptcha);
+        log.info("这是验证码ID:" + cachedCaptcha);
         if (cachedCaptcha == null || !cachedCaptcha.equalsIgnoreCase(captcha)) {
             return response(1, null, "验证码错误");
         }
@@ -125,24 +124,49 @@ public class UserController {
             return response(1, null, "用户名或密码错误");
         }
 
-        String token = JwtUtil.generateToken(user.getUsername());
+        String token = JwtUtil.generateToken(user.getId());
         return response(0, token, "登录成功");
     }
 
+    @Autowired(required = false)
+    private JwtUtil jwt;
+
+    @PostMapping("/signout")
+    public Map<String, Object> signout(@RequestHeader("Authorization") String token) {
+        jwt.addTokenToBlacklist(token, 60000);
+        if(jwt.isTokenBlacklisted(token) == true) {
+            return response(1, null, "成功登出！");
+        }
+        return response(0,null,"登出失败！");
+    }
+
+    @GetMapping("/getAvatar")
+    public Map<String, Object> getAvatar(@RequestHeader("Authorization") String token) {
+        String userid = JwtUtil.getClaimsFromToken(token).getSubject();
+        User user = userService.findById(userid);
+        if (user == null) {
+            return response(1, null, "用户不存在");
+        }
+        Map<String, Object> data = new HashMap<>();
+        data.put("userAvatar", user.getAvatar());
+        return response(0,null,"获取成功");
+    }
+
+
     @PostMapping("/changePassword")
     public Map<String, Object> updatePassword(@RequestHeader("Authorization") String token, @RequestBody Map<String, String> params) {
+        log.info(token);
         String oldPassword = params.get("oldPassword");
         String newPassword = params.get("newPassword");
         String emailCode = params.get("emailCode");
-
-        String username = JwtUtil.getClaimsFromToken(token).getSubject();
-        User user = userService.findByUsername(username);
-
+        log.info(newPassword);
+        String id = JwtUtil.getClaimsFromToken(token).getSubject();
+        User user = userService.findById(id);
+        log.info(id);
         if (user == null || !user.getPassword().equals(oldPassword)) {
             return response(1, null, "旧密码错误");
         }
 
-        // Verify email code (mock, assuming email code is valid)
 
         userService.updatePassword(user.getId(), newPassword);
         return response(0, null, "密码修改成功");
@@ -150,8 +174,8 @@ public class UserController {
 
     @GetMapping("/info")
     public Map<String, Object> getUserInfo(@RequestHeader("Authorization") String token) {
-        String username = JwtUtil.getClaimsFromToken(token).getSubject();
-        User user = userService.findByUsername(username);
+        String userid = JwtUtil.getClaimsFromToken(token).getSubject();
+        User user = userService.findById(userid);
         if (user == null) {
             return response(1, null, "用户不存在");
         }
@@ -168,13 +192,26 @@ public class UserController {
 
     @PostMapping("/logout")
     public Map<String, Object> logout(@RequestHeader("Authorization") String token, @RequestBody Map<String, String> params) {
-        Long userId = Long.parseLong(params.get("userId"));
+        String userId = params.get("userId");
         String emailCode = params.get("emailCode");
 
         userService.deleteUser(userId);
         return response(0, null, "注销成功");
     }
 
+    @PostMapping("/update")
+    public Map<String, Object> update(@RequestHeader("Authorization") String token, @RequestBody Map<String, String> params) {
+        String userId = JwtUtil.getClaimsFromToken(token).getSubject();
+        String emailCode = params.get("email");
+        String username = params.get("username");
+        User user = userService.findById(userId);
+        log.info(userId);
+        if (user == null) {
+            return response(1, null, "用户不存在");
+        }
+        userService.update(userId,username,emailCode);
+        return response(0, null, "修改成功");
+    }
     @GetMapping("/captcha")
     public Map<String, Object> getCaptcha() {
         String captchaId = Long.toString(System.currentTimeMillis());

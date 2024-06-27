@@ -16,6 +16,9 @@ import java.util.Map;
  * @description: TODO
  * @date 2024/6/24 19:20
  */
+
+@RestController
+@RequestMapping("/folder")
 public class FolderController {
     @Autowired
     private FolderService folderService;

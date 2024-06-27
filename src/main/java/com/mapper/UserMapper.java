@@ -23,11 +23,15 @@ public interface UserMapper {
     void insert(User user);
 
     @Update("UPDATE user SET password = #{password} WHERE id = #{id}")
-    void updatePassword(@Param("id") Long id, @Param("password") String password);
+    void updatePassword(@Param("id") String id, @Param("password") String password);
 
     @Delete("DELETE FROM user WHERE id = #{id}")
-    void delete(@Param("id") Long id);
+    void delete(@Param("id") String id);
 
     @Select("SELECT * FROM user WHERE id = #{id}")
-    User findById(@Param("id") Long id);
+    User findById(@Param("id") String id);
+
+    @Update("UPDATE user SET username = #{username}, email = #{email} WHERE id = #{id}")
+    void update(@Param("id") String id, @Param("username") String username, @Param("email") String email);
+
 }

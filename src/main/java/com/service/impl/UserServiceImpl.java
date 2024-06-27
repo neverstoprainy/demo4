@@ -33,17 +33,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updatePassword(Long id, String password) {
+    public void updatePassword(String id, String password) {
         userMapper.updatePassword(id, password);
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public void deleteUser(String id) {
         userMapper.delete(id);
     }
 
     @Override
-    public User findById(Long id) {
+    public User findById(String id) {
         return userMapper.findById(id);
+    }
+
+    @Override
+    public void update(String id,String username,String email) {
+        userMapper.update(id,username,email);
     }
 }
