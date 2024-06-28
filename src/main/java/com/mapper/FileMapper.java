@@ -19,7 +19,7 @@ public interface FileMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insertFile(FileEntity fileEntity);
 
-    @Update("UPDATE file SET isDelete = 'Y' WHERE id = #{id}")
+    @Delete("DELETE FROM file WHERE id = #{id}")
     void deleteFile(Long id);
 
     @Update("UPDATE file SET fileName = #{fileName} WHERE id = #{id}")

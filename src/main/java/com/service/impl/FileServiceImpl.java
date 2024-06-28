@@ -74,7 +74,8 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void moveFile(Long fileId, Long oldFolderId, Long newFolderId, String token) {
+    public void moveFile(Long fileId, Long newFolderId, String token) {
+
         fileMapper.moveFile(fileId, newFolderId);
     }
 

@@ -8,7 +8,7 @@ public interface FolderService {
         void recycleFolder(Long folderId, Long parentFolderId, String userId, String token);
         void deleteFolder(Long folderId, String token);
         void renameFolder(Long folderId, String newFolderName, String token);
-        void moveFolder(Long folderId, Long oldFolderId, Long newFolderId, String token);
+        void moveFolder(Long folderId, Long newFolderId, String token);
         List<Map<String, Object>> getFolderContents(Long folderId, String token);
     }
 

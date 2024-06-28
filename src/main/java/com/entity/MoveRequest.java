@@ -13,7 +13,6 @@ import lombok.Data;
 public class MoveRequest {
     private Long fileId;
     private Long folderId;
-    private Long oldFolderId;
-    private Long newFolderId;
+    private Long newparentFolderId;
 
 }

@@ -2,13 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mapper.FolderMapper">
     <insert id="createFolder">
-        INSERT INTO folder (parent_folder_id, folder_name)
+        INSERT INTO folder (parentFolderId, folderName)
         VALUES (#{parentFolderId}, #{folderName})
     </insert>
 
     <update id="recycleFolder">
         UPDATE folder
-        SET is_recycled = 1, recycled_by = #{userId}, recycled_at = NOW()
-        WHERE folder_id = #{folderId} AND parent_folder_id = #{parentFolderId}
+        SET isRecycled = 1, recycledBy = #{userId}, recycledAt = NOW()
+        WHERE folderId = #{folderId} AND parentFolderId = #{parentFolderId}
     </update>
 </mapper>

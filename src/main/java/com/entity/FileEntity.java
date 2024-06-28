@@ -5,9 +5,13 @@ package com.entity;
 import lombok.Data;
 
 import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * @author zym
@@ -18,12 +22,16 @@ import java.time.LocalDateTime;
 @Data
 public class FileEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "folderName")
     private Long parentFolderId;
     private String createBy;
-    private LocalDateTime createTime;
-    private LocalDateTime updateTime;
-    private LocalDateTime lastAccessedTime;
+    private Date createTime;
+    private Date updateTime;
+    private Date lastAccessedTime;
     private String fileName;
     private BigDecimal size;
     private String fileType;

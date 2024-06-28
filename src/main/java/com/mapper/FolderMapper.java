@@ -20,7 +20,7 @@ public interface FolderMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insertFolder(Folder folder);
 
-    @Update("UPDATE folder SET isDelete = 'Y' WHERE id = #{id}")
+    @Delete("DELETE FROM folder WHERE id = #{id}")
     void deleteFolder(Long id);
 
     @Update("UPDATE folder SET folderName = #{folderName} WHERE id = #{id}")
@@ -32,6 +32,12 @@ public interface FolderMapper {
     @Update("UPDATE folder SET isDelete = 'Y' WHERE id = #{folderId}")
     void recycleFolder(Long folderId);
 
-    @Select("SELECT * FROM file WHERE parentFolderId = #{folderId} AND is_delete = 'N' UNION ALL SELECT * FROM folder WHERE parent_folder_id = #{folderId} AND is_delete = 'N'")
-    List<Map<String, Object>> getFolderContents(@Param("folderId") Long folderId);
+    @Select("SELECT id, fileName AS name, createBy, createTime, updateTime, lastAccessedTime AS lastAccessTime, parentFolderId, isDelete, size, 'file' AS type " +
+            "FROM file WHERE parentFolderId = #{parentFolderId} AND isDelete = 'N' " +
+            "UNION ALL " +
+            "SELECT id, folderName AS name, createBy, createTime, updateTime, lastAccessTime, parentFolderId, isDelete, size, 'folder' AS type " +
+            "FROM folder WHERE parentFolderId = #{parentFolderId} AND isDelete = 'N'")
+    List<Map<String, Object>> getFolderContents(@Param("parentFolderId") Long parentFolderId);
+
+
 }

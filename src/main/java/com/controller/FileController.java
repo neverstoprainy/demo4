@@ -4,6 +4,7 @@ import com.entity.*;
 
 import com.service.FileService;
 import com.service.RecycleService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -15,7 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Map;
 
-
+@CrossOrigin
+@Slf4j
 @RestController
 @RequestMapping("/file")
 public class FileController {
@@ -55,7 +57,7 @@ public class FileController {
         }
     }
 
-    @GetMapping("/download")
+    @GetMapping("/downloadFile")
     public ResponseEntity<Resource> downloadFile(@RequestParam("fileId") Long fileId,
                                                  @RequestHeader("Authorization") String token) {
         try {
@@ -94,7 +96,7 @@ public class FileController {
         }
     }
 
-    @PutMapping("/rename")
+    @PutMapping("/modifyFileName")
     public ResponseEntity<ResponseMessage> renameFile(@RequestBody RenameRequest renameRequest,
                                                       @RequestHeader("Authorization") String token) {
         try {
@@ -107,11 +109,12 @@ public class FileController {
         }
     }
 
-    @PutMapping("/move")
+    @PostMapping("/move")
     public ResponseEntity<ResponseMessage> moveFile(@RequestBody MoveRequest moveRequest,
                                                     @RequestHeader("Authorization") String token) {
         try {
-            fileService.moveFile(moveRequest.getFileId(), moveRequest.getOldFolderId(), moveRequest.getNewFolderId(), token);
+            System.out.println("移动到了"+ moveRequest.getNewparentFolderId());
+            fileService.moveFile(moveRequest.getFileId(),moveRequest.getNewparentFolderId(), token);
             ResponseMessage response = new ResponseMessage(0, "移动成功", "ok");
             return ResponseEntity.ok(response);
         } catch (Exception e) {

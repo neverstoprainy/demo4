@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +55,7 @@ public class UserController {
     private EmailUtil emailUtil;
 
 
-    @PostMapping("/sendEmailCode")
+    @GetMapping("/sendEmailCode")
     public Map<String, Object> sendEmailCode(@RequestParam String email) {
         String emailCode = generateEmailCode();
         String emailCodeKey = "emailCode:" + email;
@@ -78,6 +79,7 @@ public class UserController {
         String captcha = params.get("captcha");
         String captchaId = params.get("captchaId");
 
+        log.info(emailCode);
         String cachedCaptcha = (String) redisUtil.get(captchaId);
         if (cachedCaptcha == null || !cachedCaptcha.equalsIgnoreCase(captcha)) {
             return response(1, null, "验证码错误");
@@ -149,7 +151,7 @@ public class UserController {
         }
         Map<String, Object> data = new HashMap<>();
         data.put("userAvatar", user.getAvatar());
-        return response(0,null,"获取成功");
+        return response(0,data,"获取成功");
     }
 
 
@@ -214,15 +216,15 @@ public class UserController {
     }
     @GetMapping("/captcha")
     public Map<String, Object> getCaptcha() {
-        String captchaId = Long.toString(System.currentTimeMillis());
+        String captchaId = Long.toString(System.currentTimeMillis()).substring(0,4);
         String captcha = captchaUtil.generateCaptcha();
 
-        // Store captcha in Redis with a 5-minute expiration
+
         redisUtil.set(captchaId, captcha, 300);
 
         Map<String, Object> data = new HashMap<>();
-        data.put("captchaId", captchaId);
-        data.put("captcha", captcha);
+        data.put("Id", captchaId);
+        data.put("base64", captcha);
 
         return response(0, data, "ok");
     }

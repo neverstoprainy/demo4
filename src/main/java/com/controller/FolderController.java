@@ -2,6 +2,7 @@ package com.controller;
 
 import com.entity.*;
 import com.service.FolderService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,8 @@ import java.util.Map;
  * @description: TODO
  * @date 2024/6/24 19:20
  */
-
+@CrossOrigin
+@Slf4j
 @RestController
 @RequestMapping("/folder")
 public class FolderController {
@@ -40,7 +42,7 @@ public class FolderController {
     public ResponseEntity<ResponseMessage> recycleFolder(@RequestBody Recycle recycleRequest,
                                                          @RequestHeader("Authorization") String token) {
         try {
-            folderService.recycleFolder(recycleRequest.getFileId(), recycleRequest.getParentFolderId(), recycleRequest.getUserId(), token);
+            folderService.recycleFolder(recycleRequest.getFolderId(), recycleRequest.getParentFolderId(), recycleRequest.getUserId(), token);
             ResponseMessage response = new ResponseMessage(0, "回收成功", "ok");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -62,7 +64,7 @@ public class FolderController {
         }
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/deleteFolder")
     public ResponseEntity<ResponseMessage> deleteFolder(@RequestBody DeleteRequest deleteRequest,
                                                         @RequestHeader("Authorization") String token) {
         try {
@@ -75,7 +77,7 @@ public class FolderController {
         }
     }
 
-    @PutMapping("/rename")
+    @PutMapping("/modifyFolderName")
     public ResponseEntity<ResponseMessage> renameFolder(@RequestBody RenameRequest renameRequest,
                                                         @RequestHeader("Authorization") String token) {
         try {
@@ -92,7 +94,7 @@ public class FolderController {
     public ResponseEntity<ResponseMessage> moveFolder(@RequestBody MoveRequest moveRequest,
                                                       @RequestHeader("Authorization") String token) {
         try {
-            folderService.moveFolder(moveRequest.getFolderId(), moveRequest.getOldFolderId(), moveRequest.getNewFolderId(), token);
+            folderService.moveFolder(moveRequest.getFolderId(),moveRequest.getNewparentFolderId(), token);
             ResponseMessage response = new ResponseMessage(0, "移动成功", "ok");
             return ResponseEntity.ok(response);
         } catch (Exception e) {

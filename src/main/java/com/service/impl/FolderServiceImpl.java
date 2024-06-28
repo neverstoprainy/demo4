@@ -56,7 +56,7 @@ public class FolderServiceImpl implements FolderService{
     }
 
     @Override
-    public void moveFolder(Long folderId, Long oldFolderId, Long newFolderId, String token) {
+    public void moveFolder(Long folderId,  Long newFolderId, String token) {
         folderMapper.moveFolder(folderId, newFolderId);
     }
 }
