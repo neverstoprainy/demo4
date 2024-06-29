@@ -11,8 +11,8 @@ import lombok.Data;
 
 @Data
 public class MoveRequest {
-    private Long fileId;
-    private Long folderId;
-    private Long newparentFolderId;
+    private String fileId;
+    private String folderId;
+    private String newparentFolderId;
 
 }

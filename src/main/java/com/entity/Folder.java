@@ -29,7 +29,7 @@ public class Folder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @Column(name = "folderName")
     private String folderName;
@@ -47,7 +47,7 @@ public class Folder {
     private Date lastAccessTime;
 
     @Column(name = "parentFolderId")
-    private Long parentFolderId;
+    private String parentFolderId;
 
     @Column(name = "isDelete")
     private String isDelete;
@@ -55,6 +55,8 @@ public class Folder {
     @Column(name = "size")
     private BigDecimal size;
 
+    @Column(name = "RootFolderId")
+    private String RootFolderId;
     // 不映射到数据库的字段
     @Transient
     private BigDecimal folderSize;

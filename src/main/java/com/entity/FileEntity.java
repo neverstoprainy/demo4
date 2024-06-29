@@ -24,10 +24,10 @@ public class FileEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @Column(name = "folderName")
-    private Long parentFolderId;
+    private String parentFolderId;
     private String createBy;
     private Date createTime;
     private Date updateTime;

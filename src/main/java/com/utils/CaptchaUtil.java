@@ -15,6 +15,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 @Component
@@ -38,13 +40,15 @@ public class CaptchaUtil {
         kaptchaProducer.setConfig(config);
     }
 
-    public String generateCaptcha() {
+    public Map<String, String> generateCaptcha() {
         String text = kaptchaProducer.createText();
         BufferedImage image = kaptchaProducer.createImage(text);
         String imageBase64 = encodeImageToBase64(image);
-        return imageBase64;
+        Map<String, String> captchaResult = new HashMap<>();
+        captchaResult.put("text", text);
+        captchaResult.put("imageBase64", imageBase64);
+        return captchaResult;
     }
-
     private String encodeImageToBase64(BufferedImage image) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             ImageIO.write(image, "png", baos);

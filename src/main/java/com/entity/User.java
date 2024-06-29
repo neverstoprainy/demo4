@@ -41,5 +41,7 @@ public class User {
 
         private Long folderId;
 
-        private String loginTime;
+        private Date loginTime;
+
+        private String rootFolderId;
 }

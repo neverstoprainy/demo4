@@ -11,8 +11,8 @@ import lombok.Data;
 
 @Data
 public class RenameRequest {
-    private Long fileId;
-    private Long folderId;
+    private String fileId;
+    private String folderId;
     private String newFileName;
     private String newFolderName;
 

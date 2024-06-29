@@ -10,9 +10,9 @@ import lombok.Data;
  */
 @Data
 public class Recycle{
-    private Long FileId;
-    private Long FolderId;
-    private Long parentFolderId;
+    private String FileId;
+    private String FolderId;
+    private String parentFolderId;
     private String userId;
     private boolean isFolder;
 

@@ -11,6 +11,6 @@ import lombok.Data;
 
 @Data
 public class DeleteRequest {
-    private Long fileId;
-    private Long folderId;
+    private String fileId;
+    private String folderId;
 }

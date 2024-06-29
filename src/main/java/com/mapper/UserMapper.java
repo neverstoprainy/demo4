@@ -18,7 +18,8 @@ public interface UserMapper {
     @Select("SELECT * FROM user WHERE email = #{email}")
     User findByEmail(@Param("email") String email);
 
-    @Insert("INSERT INTO user (username, password, email, createTime, updateTime, usedCapacity, capacity, isAdmin, avatar, FolderId, loginTime) VALUES (#{username}, #{password}, #{email}, #{createTime}, #{updateTime}, #{usedCapacity}, #{capacity}, #{isAdmin}, #{avatar}, #{folderId}, #{loginTime})")
+    @Insert("INSERT INTO user (username, password, email, createTime, updateTime, rootFolderId ,isAdmin,loginTime) " +
+            "VALUES (#{username}, #{password}, #{email}, #{createTime}, #{updateTime}, #{rootFolderId},#{isAdmin},#{loginTime})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insert(User user);
 

@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +40,7 @@ public class FolderController {
         }
     }
 
-    @DeleteMapping("/recycleFolder")
+    @PostMapping("/recycleFolder")
     public ResponseEntity<ResponseMessage> recycleFolder(@RequestBody Recycle recycleRequest,
                                                          @RequestHeader("Authorization") String token) {
         try {
@@ -52,11 +54,21 @@ public class FolderController {
     }
 
     @GetMapping("/contents")
-    public ResponseEntity<ResponseMessage> getFolderContents(@RequestParam(value = "folderId", required = false) Long folderId,
+    public ResponseEntity<ResponseMessage> getFolderContents(@RequestParam(value = "folderId", required = false) String folderId,
                                                              @RequestHeader("Authorization") String token) {
         try {
             List<Map<String, Object>> contents = folderService.getFolderContents(folderId, token);
-            ResponseMessage response = new ResponseMessage(0, contents, "ok");
+            // 构建 JSON 响应格式
+            List<Object> responseData = new ArrayList<>();
+            for (Map<String, Object> content : contents) {
+                boolean isFolder = "folder".equals(content.get("type"));
+                Map<String, Object> item = new LinkedHashMap<>();
+                item.put("id", content.get("id"));
+                item.put("name", content.get("name"));
+                item.put("isFolder", isFolder);
+                responseData.add(item);
+            }
+            ResponseMessage response = new ResponseMessage(0, responseData, "ok");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             ResponseMessage response = new ResponseMessage(1, null, e.getMessage());
@@ -64,7 +76,31 @@ public class FolderController {
         }
     }
 
-    @DeleteMapping("/deleteFolder")
+    @GetMapping("/root")
+    public ResponseEntity<ResponseMessage> getRootFolderContents(@RequestParam(value = "rootfolderId", required = false) String rootfolderId,
+                                                             @RequestHeader("Authorization") String token) {
+        try {
+            Folder root = folderService.getFolderByRootFolderId(rootfolderId);
+            List<Map<String, Object>> contents = folderService.getFolderContents(root.getId(), token);
+            // 构建 JSON 响应格式
+            List<Object> responseData = new ArrayList<>();
+            for (Map<String, Object> content : contents) {
+                boolean isFolder = "folder".equals(content.get("type"));
+                Map<String, Object> item = new LinkedHashMap<>();
+                item.put("id", content.get("id"));
+                item.put("name", content.get("name"));
+                item.put("isFolder", isFolder);
+                responseData.add(item);
+            }
+            ResponseMessage response = new ResponseMessage(0, responseData, "ok");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ResponseMessage response = new ResponseMessage(1, null, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("/deleteFolder")
     public ResponseEntity<ResponseMessage> deleteFolder(@RequestBody DeleteRequest deleteRequest,
                                                         @RequestHeader("Authorization") String token) {
         try {
@@ -77,7 +113,7 @@ public class FolderController {
         }
     }
 
-    @PutMapping("/modifyFolderName")
+    @PostMapping("/modifyFolderName")
     public ResponseEntity<ResponseMessage> renameFolder(@RequestBody RenameRequest renameRequest,
                                                         @RequestHeader("Authorization") String token) {
         try {
@@ -90,7 +126,7 @@ public class FolderController {
         }
     }
 
-    @PutMapping("/move")
+    @PostMapping("/move")
     public ResponseEntity<ResponseMessage> moveFolder(@RequestBody MoveRequest moveRequest,
                                                       @RequestHeader("Authorization") String token) {
         try {

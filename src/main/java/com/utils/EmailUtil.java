@@ -24,6 +24,7 @@ public class EmailUtil {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         helper.setTo(to);
+        helper.setFrom("741902776@qq.com");
         helper.setSubject(subject);
         helper.setText(content, true);
         mailSender.send(message);

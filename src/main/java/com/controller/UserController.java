@@ -7,7 +7,9 @@ package com.controller;
  * @date 2024/6/24 16:52
  */
 
+import com.entity.Folder;
 import com.entity.User;
+import com.service.FolderService;
 import com.service.UserService;
 import com.utils.JwtUtil;
 import com.utils.RedisUtil;
@@ -19,10 +21,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +54,8 @@ public class UserController {
     @Autowired
     private EmailUtil emailUtil;
 
+    @Autowired
+    private FolderService folderService;
 
     @GetMapping("/sendEmailCode")
     public Map<String, Object> sendEmailCode(@RequestParam String email) {
@@ -72,6 +74,9 @@ public class UserController {
 
     @PostMapping("/register")
     public Map<String, Object> register(@RequestBody Map<String, String> params) {
+        // 生成用户根目录ID
+        String rootFolderId = UUID.randomUUID().toString().replace("-", "");
+
         String username = params.get("username");
         String password = params.get("password");
         String email = params.get("email");
@@ -91,11 +96,27 @@ public class UserController {
         log.info(cachedCaptcha);
         log.info(storedEmailCode);
 
+        // 创建用户根目录
+        Folder rootFolder = new Folder();
+        rootFolder.setId(rootFolderId);
+        rootFolder.setFolderName(username + "_root");
+        rootFolder.setCreateBy(username);
+        rootFolder.setCreateTime(new Date());
+        rootFolder.setUpdateTime(new Date());
+        rootFolder.setIsDelete("N");
+        rootFolder.setParentFolderId(null);  // 根目录没有父目录
+        rootFolder.setRootFolderId(rootFolderId);
+
+        folderService.insert(rootFolder);
+
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
         user.setEmail(email);
         user.setCreateTime(new Date());
+        user.setIsAdmin(false);
+        user.setLoginTime(new Date());
+        user.setRootFolderId(rootFolderId);
         userService.register(user);
 
         return response(0, null, "注册成功");
@@ -178,6 +199,7 @@ public class UserController {
     public Map<String, Object> getUserInfo(@RequestHeader("Authorization") String token) {
         String userid = JwtUtil.getClaimsFromToken(token).getSubject();
         User user = userService.findById(userid);
+        log.info("这是："+user.getRootFolderId());
         if (user == null) {
             return response(1, null, "用户不存在");
         }
@@ -187,7 +209,7 @@ public class UserController {
         data.put("username", user.getUsername());
         data.put("email", user.getEmail());
         data.put("userRole", user.getIsAdmin() ? "admin" : "user");
-        data.put("userRootFolder", user.getFolderId());
+        data.put("userRootFolder", user.getRootFolderId());
 
         return response(0, data, "ok");
     }
@@ -216,15 +238,18 @@ public class UserController {
     }
     @GetMapping("/captcha")
     public Map<String, Object> getCaptcha() {
-        String captchaId = Long.toString(System.currentTimeMillis()).substring(0,4);
-        String captcha = captchaUtil.generateCaptcha();
+        String captchaId = Long.toString(System.currentTimeMillis()).substring(9,13);
+        log.info("Captcha ID: " + captchaId);
 
+        Map<String, String> captchaData = captchaUtil.generateCaptcha();
+        String captchaText = captchaData.get("text");
+        String captchaImageBase64 = captchaData.get("imageBase64");
 
-        redisUtil.set(captchaId, captcha, 300);
+        redisUtil.set(captchaId, captchaText, 300); // 5 minutes expiration time
 
         Map<String, Object> data = new HashMap<>();
         data.put("Id", captchaId);
-        data.put("base64", captcha);
+        data.put("base64", captchaImageBase64);
 
         return response(0, data, "ok");
     }

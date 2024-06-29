@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +28,7 @@ public class FileController {
     private FileService fileService;
 
     @PostMapping("/uploadFile")
-    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("parentFolderId") Long parentFolderId,
+    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("parentFolderId") String parentFolderId,
                                                       @RequestParam("fileType") String fileType,
                                                       @RequestParam("file") MultipartFile file,
                                                       @RequestHeader("Authorization") String token){
@@ -44,7 +46,7 @@ public class FileController {
     @Autowired
     private RecycleService recycleService;
 
-    @DeleteMapping("/recycleFile")
+    @PostMapping("/recycleFile")
     public ResponseEntity<ResponseMessage> recycleFile(@RequestBody Recycle recycleRequest,
                                                        @RequestHeader("Authorization") String token) {
         try {
@@ -58,7 +60,7 @@ public class FileController {
     }
 
     @GetMapping("/downloadFile")
-    public ResponseEntity<Resource> downloadFile(@RequestParam("fileId") Long fileId,
+    public ResponseEntity<Resource> downloadFile(@RequestParam("fileId") String fileId,
                                                  @RequestHeader("Authorization") String token) {
         try {
             Resource file = fileService.downloadFile(fileId, token);
@@ -71,11 +73,23 @@ public class FileController {
     }
 
     @GetMapping("/info")
-    public ResponseEntity<ResponseMessage> getFileInfo(@RequestParam("id") Long id,
+    public ResponseEntity<ResponseMessage> getFileInfo(@RequestParam("id") String id,
                                                        @RequestHeader("Authorization") String token) {
         try {
             Map<String, Object> fileInfo = fileService.getFileInfo(id, token);
-            ResponseMessage response = new ResponseMessage(0, fileInfo, "ok");
+
+            // 构建返回的数据结构
+            Map<String, Object> data = new LinkedHashMap<>();
+            data.put("parentFolderId", fileInfo.get("parentFolderId"));
+            data.put("creator", fileInfo.get("createBy"));
+            data.put("lastAccessTime", fileInfo.get("lastAccessedTime"));
+            data.put("size", fileInfo.get("size"));
+            data.put("createTime", fileInfo.get("createTime"));
+            data.put("fileName", fileInfo.get("fileName"));
+            data.put("fileType", fileInfo.get("fileType"));
+
+            // 构建 ResponseMessage
+            ResponseMessage response = new ResponseMessage(0, data, "ok");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             ResponseMessage response = new ResponseMessage(1, null, e.getMessage());
@@ -83,7 +97,7 @@ public class FileController {
         }
     }
 
-    @DeleteMapping("/delete")
+    @PostMapping("/delete")
     public ResponseEntity<ResponseMessage> deleteFile(@RequestBody DeleteRequest deleteRequest,
                                                       @RequestHeader("Authorization") String token) {
         try {
@@ -96,7 +110,7 @@ public class FileController {
         }
     }
 
-    @PutMapping("/modifyFileName")
+    @PostMapping("/modifyFileName")
     public ResponseEntity<ResponseMessage> renameFile(@RequestBody RenameRequest renameRequest,
                                                       @RequestHeader("Authorization") String token) {
         try {
@@ -122,32 +136,32 @@ public class FileController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+//
+//    @GetMapping("/share")
+//    public ResponseEntity<ResponseMessage> shareFile(@RequestParam(value = "owerId", required = false) String owerId,
+//                                                     @RequestParam(value = "folderId", required = false) String folderId,
+//                                                     @RequestHeader("Authorization") String token) {
+//        try {
+//            List<Map<String, Object>> sharedFiles = fileService.shareFile(owerId, folderId, token);
+//            ResponseMessage response = new ResponseMessage(0, sharedFiles, "ok");
+//            return ResponseEntity.ok(response);
+//        } catch (Exception e) {
+//            ResponseMessage response = new ResponseMessage(1, null, e.getMessage());
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+//        }
+//    }
 
-    @GetMapping("/share")
-    public ResponseEntity<ResponseMessage> shareFile(@RequestParam(value = "owerId", required = false) String owerId,
-                                                     @RequestParam(value = "folderId", required = false) Long folderId,
-                                                     @RequestHeader("Authorization") String token) {
-        try {
-            List<Map<String, Object>> sharedFiles = fileService.shareFile(owerId, folderId, token);
-            ResponseMessage response = new ResponseMessage(0, sharedFiles, "ok");
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            ResponseMessage response = new ResponseMessage(1, null, e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-
-    @DeleteMapping("/unshare")
-    public ResponseEntity<ResponseMessage> unshareFile(@RequestParam("fileId") Long fileId,
-                                                       @RequestHeader("Authorization") String token) {
-        try {
-            fileService.unshareFile(fileId, token);
-            ResponseMessage response = new ResponseMessage(0, "取消成功", "ok");
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            ResponseMessage response = new ResponseMessage(1, null, e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
+//    @PostMapping("/unshare")
+//    public ResponseEntity<ResponseMessage> unshareFile(@RequestParam("fileId") String fileId,
+//                                                       @RequestHeader("Authorization") String token) {
+//        try {
+//            fileService.unshareFile(fileId, token);
+//            ResponseMessage response = new ResponseMessage(0, "取消成功", "ok");
+//            return ResponseEntity.ok(response);
+//        } catch (Exception e) {
+//            ResponseMessage response = new ResponseMessage(1, null, e.getMessage());
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+//        }
+//    }
 
 }
