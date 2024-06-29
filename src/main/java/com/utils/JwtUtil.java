@@ -50,6 +50,7 @@ public class JwtUtil {
     // 添加 token 到黑名单，设置过期时间
     public   void addTokenToBlacklist(String token, long expirationTimeInMinutes) {
         String key = BLACKLIST_PREFIX + token;
+        System.out.println(key);
         redisTemplate.opsForValue().set(key, "invalid", expirationTimeInMinutes, TimeUnit.MINUTES);
     }
 

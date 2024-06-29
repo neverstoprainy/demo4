@@ -40,7 +40,7 @@ public class FolderController {
         }
     }
 
-    @PostMapping("/recycleFolder")
+    @PostMapping("/recoverFolder")
     public ResponseEntity<ResponseMessage> recycleFolder(@RequestBody Recycle recycleRequest,
                                                          @RequestHeader("Authorization") String token) {
         try {
@@ -53,7 +53,7 @@ public class FolderController {
         }
     }
 
-    @GetMapping("/contents")
+    @GetMapping("/getFolderInfo")
     public ResponseEntity<ResponseMessage> getFolderContents(@RequestParam(value = "folderId", required = false) String folderId,
                                                              @RequestHeader("Authorization") String token) {
         try {

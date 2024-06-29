@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/user/search")
+@RequestMapping("/file/searchFile")
 public class SearchController {
 
     @Autowired(required = false)

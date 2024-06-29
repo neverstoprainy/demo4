@@ -156,6 +156,7 @@ public class UserController {
 
     @PostMapping("/signout")
     public Map<String, Object> signout(@RequestHeader("Authorization") String token) {
+        System.out.println(token);
         jwt.addTokenToBlacklist(token, 60000);
         if(jwt.isTokenBlacklisted(token) == true) {
             return response(1, null, "成功登出！");
@@ -195,7 +196,7 @@ public class UserController {
         return response(0, null, "密码修改成功");
     }
 
-    @GetMapping("/info")
+    @GetMapping("/getUserInfo")
     public Map<String, Object> getUserInfo(@RequestHeader("Authorization") String token) {
         String userid = JwtUtil.getClaimsFromToken(token).getSubject();
         User user = userService.findById(userid);

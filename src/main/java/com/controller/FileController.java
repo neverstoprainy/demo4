@@ -46,7 +46,7 @@ public class FileController {
     @Autowired
     private RecycleService recycleService;
 
-    @PostMapping("/recycleFile")
+    @PostMapping("/recoverFile")
     public ResponseEntity<ResponseMessage> recycleFile(@RequestBody Recycle recycleRequest,
                                                        @RequestHeader("Authorization") String token) {
         try {
@@ -72,7 +72,7 @@ public class FileController {
         }
     }
 
-    @GetMapping("/info")
+    @GetMapping("/getFileInfo")
     public ResponseEntity<ResponseMessage> getFileInfo(@RequestParam("id") String id,
                                                        @RequestHeader("Authorization") String token) {
         try {
@@ -97,7 +97,7 @@ public class FileController {
         }
     }
 
-    @PostMapping("/delete")
+    @PostMapping("/deleteFile")
     public ResponseEntity<ResponseMessage> deleteFile(@RequestBody DeleteRequest deleteRequest,
                                                       @RequestHeader("Authorization") String token) {
         try {
